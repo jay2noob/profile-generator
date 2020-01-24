@@ -1,6 +1,8 @@
 const inquirer = require("inquirer");
 const fs = require("fs");
 const util = require("util");
+const axios = require("axios");
+const pdf = require("html-pdf")
 
 const writeFileAsync = util.promisify(fs.writeFile);
 
@@ -20,7 +22,9 @@ function promptUser() {
 }
 
 function generateHTML(answers) {
-  return `
+  const queryUrl = `https://api.github.com/users/${answers.name}`;
+  
+  const resume = `
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -34,6 +38,24 @@ function generateHTML(answers) {
   <div>${answers.color}</div>
 </body>
 </html>`;
+fs.writeFile(`./html/${answers.name}.html`, resume, function (err) {
+  if (err) {
+      return console.log(err);
+  }
+  console.log("Success!");
+  makePDFFile();
+});
+function makePDFFile() {
+  const html = fs.readFileSync(`./html/${answers.name}.html`, 'utf8');
+  const options = {
+      "height": "14in",
+      "width": "12in",
+  };
+  pdf.create(html, options).toFile(`./pdf/${answers.name}.pdf`, function (err, res) {
+      if (err) return console.log(err);
+      console.log(res);
+  });
+}
 }
 
 promptUser()
@@ -41,6 +63,10 @@ promptUser()
     const html = generateHTML(answers);
 
     return writeFileAsync("index.html", html);
+
+    
+    
+  
   })
   .then(function() {
     console.log("Successfully wrote to index.html");
@@ -48,3 +74,4 @@ promptUser()
   .catch(function(err) {
     console.log(err);
   });
+ 
