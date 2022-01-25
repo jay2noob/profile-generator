@@ -18,7 +18,7 @@
   },
   "homepage": "https://github.com/jay2noob/profile-generator#readme",
   "dependencies": {
-    "axios": "^0.21.1",
+    "axios": "^0.21.2",
     "html-pdf": "^3.0.1",
     "inquirer": "^7.0.3"
   }
